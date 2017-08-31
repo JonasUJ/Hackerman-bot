@@ -3,7 +3,7 @@ import traceback
 import os
 import discord
 from subprocess import Popen, PIPE
-from tempfile import TemporaryFile
+from tempfile import NamedTemporaryFile
 from discord.ext import commands
 from utils import Utils
 
@@ -33,7 +33,7 @@ class Code:
         final_msg = await ctx.send('Processing...\n{}'.format(to_process))
 
         # Create tempFile and write code to it
-        tempFile = TemporaryFile(delete=False)
+        tempFile = NamedTemporaryFile(delete=False)
         tempFile.write(to_exec)
         tempFile.close()
 
