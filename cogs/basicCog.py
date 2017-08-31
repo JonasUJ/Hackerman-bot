@@ -18,7 +18,7 @@ class basicCog:
     
     @commands.command()
     async def exit(self, ctx):
-        if ctx.author.id == self.utils.config['my_id']:
+        if str(ctx.author.id) == self.utils.config['my_id']:
             await self.bot.close()
         else:
             await ctx.send('Permission denied')
