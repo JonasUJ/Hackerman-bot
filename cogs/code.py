@@ -45,6 +45,8 @@ class Code:
         err = process.stderr.read().decode('utf-8')
 
         print(process, tempFile.name, out, err, process.communicate())
+        with open(tempFile) as t:
+            print(t.read())
 
         # Remove tempFile
         os.remove(tempFile.name)
