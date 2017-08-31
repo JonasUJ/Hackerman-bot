@@ -1,4 +1,5 @@
 import json
+import os
 
 class Utils:
 
@@ -12,6 +13,8 @@ class Utils:
                 
             }
         }
+
+        self.is_heroku = os.environ.get('IS_HEROKU', None)
         
         def setitems(dic: dict, standard: dict):
             '''Recursivly generate a dictionary from dic with fallback to standard'''
@@ -50,3 +53,6 @@ class Utils:
             raise FileNotFoundError('A "secrets.json" file containing your token etc. is required in this directory')
         else:
             self.config.update(self.secrets)
+            if self.is_heroku:
+                self.config['token'] = os.environ.get('TOKEN')
+                self.config['my_id'] = os.environ.get('MY_ID')

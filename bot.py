@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands
 from utils import Utils
 
-is_heroku = os.environ.get('IS_HEROKU', None)
 
 utils = Utils()
 bot = commands.Bot(utils.config['command_prefix'])
@@ -27,7 +26,4 @@ if __name__ == '__main__':
             bot.load_extension('cogs.{}'.format(name))
 
     # Launch bot
-    if is_heroku:
-        bot.run(os.environ.get('TOKEN', None))
-    else:
-        bot.run(utils.config['token'])
+    bot.run(utils.config['token'])
