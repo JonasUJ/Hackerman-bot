@@ -9,14 +9,6 @@ utils = Utils()
 bot = commands.Bot(utils.config['command_prefix'])
 utils.bot = bot
 
-def app(environ, start_response):
-    data = b"Hello, World!\n"
-    start_response("200 OK", [
-        ("Content-Type", "text/plain"),
-        ("Content-Length", str(len(data)))
-    ])
-    return iter([data])
-
 
 @bot.event
 async def on_ready():
