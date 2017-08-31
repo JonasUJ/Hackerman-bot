@@ -9,9 +9,6 @@ utils = Utils()
 bot = commands.Bot(utils.config['command_prefix'])
 utils.bot = bot
 
-@bot.command()
-async def ping(ctx):
-    await ctx.send('Pong')
 
 @bot.event
 async def on_ready():
