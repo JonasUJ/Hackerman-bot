@@ -1,1 +1,1 @@
-bot: python bot.py --logfile -
+bot: gunicorn bot.py --logfile -
