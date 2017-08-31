@@ -44,6 +44,8 @@ class Code:
         out = process.stdout.read().decode('utf-8')
         err = process.stderr.read().decode('utf-8')
 
+        print(process, tempFile.name, out, err)
+
         # Remove tempFile
         os.remove(tempFile.name)
 
