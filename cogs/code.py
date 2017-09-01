@@ -2,7 +2,7 @@ import re
 import traceback
 import os
 import discord
-from subprocess import Popen, PIPE
+from subprocess import run, Popen, PIPE
 from tempfile import NamedTemporaryFile
 from discord.ext import commands
 from utils import Utils
@@ -38,13 +38,16 @@ class Code:
         tempFile.close()
 
         # Open tempFile with Python
-        process = Popen(['python3', tempFile.name], shell=True, stdout=PIPE, stderr=PIPE, bufsize=0)
+        #process = Popen(['python3', tempFile.name], shell=True, stdout=PIPE, stderr=PIPE, bufsize=0)
+        process = run(['python', tempFile.name], shell=True, stdout=PIPE, stderr=PIPE)
 
         # Get output
-        out = process.stdout.read().decode('utf-8')
-        err = process.stderr.read().decode('utf-8')
+        #out = process.stdout.read().decode('utf-8')
+        #err = process.stderr.read().decode('utf-8')
+        out = process.stdout.decode('utf-8')
+        err = process.stderr.decode('utf-8')
 
-        print(process, tempFile.name, out, err, process.communicate())
+        print(process, tempFile.name, out, err)
         with open(tempFile.name) as t:
             print(t.read())
 
