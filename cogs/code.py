@@ -38,7 +38,7 @@ class Code:
         tempFile.close()
 
         # Open tempFile with Python
-        process = Popen(['py', tempFile.name], shell=True, stdout=PIPE, stderr=PIPE, bufsize=0)
+        process = Popen(['python3', tempFile.name], shell=True, stdout=PIPE, stderr=PIPE, bufsize=0)
 
         # Get output
         out = process.stdout.read().decode('utf-8')
