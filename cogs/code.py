@@ -1,11 +1,23 @@
 import re
-import traceback
+import sys
 import os
 import discord
+import contextlib
+from io import StringIO
 from subprocess import run, Popen, PIPE
 from tempfile import NamedTemporaryFile
 from discord.ext import commands
 from utils import Utils
+
+
+@contextlib.contextmanager
+def stdoutIO(stdout=None):
+    old = sys.stdout
+    if stdout is None:
+        stdout = StringIO()
+    sys.stdout = stdout
+    yield stdout
+    sys.stdout = old
 
 
 class Code:
@@ -18,52 +30,42 @@ class Code:
         self.code_expr = re.compile(r'```py\n([^```]+)')
 
     
-    @commands.command()
+    @commands.command(aliases=['py', 'code'])
     async def process(self, ctx, *, to_process):
         '''Process the code passed in to_process and edit ctx.message with output'''
 
         try:
             # Get code to run
-            to_exec = self.code_expr.search(to_process).group(1).encode('utf-8')
+            to_exec = self.code_expr.search(to_process).group(1)
         except AttributeError:
             # If the code markdown was improperly formatted
             return
 
         # Send message confirming that the snippet is being processed
-        final_msg = await ctx.send('Processing...\n{}'.format(to_process))
+        final_msg = await ctx.send('Processing...')
 
-        # Create tempFile and write code to it
-        tempFile = NamedTemporaryFile(delete=False)
-        tempFile.write(to_exec)
-        tempFile.close()
+        err = ''
 
-        # Open tempFile with Python
-        #process = Popen(['python3', tempFile.name], shell=True, stdout=PIPE, stderr=PIPE, bufsize=0)
-        process = run(['python', tempFile.name], shell=True, stdout=PIPE, stderr=PIPE)
-
-        # Get output
-        #out = process.stdout.read().decode('utf-8')
-        #err = process.stderr.read().decode('utf-8')
-        out = process.stdout.decode('utf-8')
-        err = process.stderr.decode('utf-8')
-
-        print(process, tempFile.name, out, err)
-        with open(tempFile.name) as t:
-            print(t.read())
-
-        # Remove tempFile
-        os.remove(tempFile.name)
+        with stdoutIO() as s:
+            try:
+                exec(to_exec)
+            except Exception as e:
+                err = ''
+                print(str(type(e)).replace('class ', ''), '\n', e.__str__())
+        
+        out = s.getvalue()
 
         # Format output
-        formatted_output = '```py\n{}{}```'.format(out, err)
-        if formatted_output == '```py\n```': formatted_output = '```No output```'
-        new_msg = '{}\nOutput:{}'.format(to_process, formatted_output)
+        formatted_output = '```xml\n{}{}```'.format(out, err)
+        if formatted_output == '```xml\n```': 
+            formatted_output = '```No output```'
+        new_msg = 'Output:{}'.format(formatted_output)
 
         try:
             # Edit message
             await final_msg.edit(content=new_msg)
         except discord.errors.HTTPException:
-            await final_msg.edit(content='Failed\n{}'.format(to_process))
+            await final_msg.edit(content='Failed, output length too high.\n{}'.format(to_process))
         
 
    
