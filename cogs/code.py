@@ -56,8 +56,8 @@ class Code:
         out = s.getvalue()
 
         # Format output
-        formatted_output = '```xml\n{}{}```'.format(out, err)
-        if formatted_output == '```xml\n```': 
+        formatted_output = '```py\n{}{}```'.format(out, err)
+        if formatted_output == '```py\n```': 
             formatted_output = '```No output```'
         new_msg = 'Output:{}'.format(formatted_output)
 
