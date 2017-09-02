@@ -48,7 +48,7 @@ class Code:
 
         with stdoutIO() as s:
             try:
-                exec(to_exec)
+                exec(to_exec, dict(), dict())
             except Exception as e:
                 err = ''
                 print(str(type(e)).replace('class ', ''), '\n', e.__str__())
