@@ -41,22 +41,23 @@ class Code:
             # If the code markdown was improperly formatted
             return
 
+        # Put in thread that terminates the script after 10 seconds
+        to_exec = """def _timeOut(): import time; time.sleep(10)
+import threading; t = threading.Thread(target=_timeOut); t.daemon = True; t.start(); t.join(); raise TimeoutError('Process took to long to complete'); {}""".format(to_exec)
+
         # Send message confirming that the snippet is being processed
         final_msg = await ctx.send('Processing...')
-
-        err = ''
 
         with stdoutIO() as s:
             try:
                 exec(to_exec, dict(), dict())
             except Exception as e:
-                err = ''
                 print(str(type(e)).replace('class ', ''), '\n', e.__str__())
         
         out = s.getvalue()
 
         # Format output
-        formatted_output = '```py\n{}{}```'.format(out, err)
+        formatted_output = '```py\n{}```'.format(out)
         if formatted_output == '```py\n```': 
             formatted_output = '```No output```'
         new_msg = 'Output:{}'.format(formatted_output)
