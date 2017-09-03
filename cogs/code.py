@@ -41,10 +41,6 @@ class Code:
             # If the code markdown was improperly formatted
             return
 
-        # Put in thread that terminates the script after 10 seconds
-        to_exec = """def _timeOut(): import time; time.sleep(10)
-import threading; t = threading.Thread(target=_timeOut); t.daemon = True; t.start(); t.join(); raise TimeoutError('Process took to long to complete')\n{}""".format(to_exec)
-
         # Send message confirming that the snippet is being processed
         final_msg = await ctx.send('Processing...')
 
