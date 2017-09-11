@@ -54,7 +54,7 @@ class Define:
         elif resp['status'] == 'ok':
             emb = discord.Embed(
                 title='Definition for `{word}`'.format(word=word),
-                description='{definition}\n\n*{example}*'.format(definition=resp['definition'], example=resp['example']),
+                description='{definition}\n\n*{example}*'.format(definition=resp['definition'], example=resp['example'].strip('\n')),
                 url=resp['link'])
             return await ctx.send(embed=emb)
 
