@@ -1,7 +1,5 @@
 import json
 import os
-import functools
-
 
 class Utils:
 
@@ -58,11 +56,3 @@ class Utils:
             if self.is_heroku:
                 self.config['token'] = os.environ.get('TOKEN')
                 self.config['my_id'] = os.environ.get('MY_ID')
-
-        
-    async def run_async(self, sync_func, *args, **kwargs):
-        """Run sync func as async"""
-        
-        nfunc = functools.partial(sync_func, *args, **kwargs)
-        res = await self.bot.loop.run_in_executor(None, nfunc)
-        return res
