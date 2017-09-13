@@ -113,7 +113,7 @@ class Define:
             return await ctx.send(embed=emb)
 
 
-    @define.command(description='Memes from KnowYourMeme')
+    @define.command(description='Memes from KnowYourMeme', aliases=['m', 'kym', 'knowyourmeme'])
     async def meme(self, ctx, *, meme: str):
         """Find a meme on KnowYourMeme and display it in chat"""
 
@@ -124,9 +124,12 @@ class Define:
             return await ctx.send('No entry for `{}`'.format(meme))
         
         elif resp['status'] == 'ok':
+            summarised = resp['summary']
+            if len(summarised) >= 2048:
+                summarised = summarised[:2045] + '...'
             emb = discord.Embed(
                 title='`{name}`'.format(name=resp['name']),
-                description=resp['summary'],
+                description=summarised,
                 url=resp['link'])
             emb.set_image(url=resp['img_url'])
             return await ctx.send(embed=emb)
