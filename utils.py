@@ -1,6 +1,7 @@
 import json
 import os
 import functools
+import aiohttp
 
 
 class Utils:
@@ -10,7 +11,7 @@ class Utils:
         # Define standard configs
         # Used if config.json is missing an item
         self.STANDARD = {
-            "command_prefix": "|",
+            "command_prefix": "&",
             "cogs": {
                 
             }
@@ -65,4 +66,12 @@ class Utils:
         
         nfunc = functools.partial(sync_func, *args, **kwargs)
         res = await self.bot.loop.run_in_executor(None, nfunc)
+        return res
+
+    
+    @classmethod
+    async def fetch(self, url):
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(url) as r:
+                res = await r.json()
         return res
