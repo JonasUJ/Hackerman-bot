@@ -16,6 +16,7 @@ async def on_ready():
     print('Logged in as:', bot.user.name)
     print('User id:', bot.user.id)
     print('--------')
+    await bot.change_presence(game=discord.Game(name='{}help'.format(bot.command_prefix), type=0))
 
 if __name__ == '__main__':
 

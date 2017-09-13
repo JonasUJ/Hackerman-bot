@@ -32,7 +32,7 @@ class Code:
     
     @commands.command(aliases=['py', 'code'])
     async def process(self, ctx, *, to_process):
-        '''Process the code passed in to_process and edit ctx.message with output'''
+        '''Process the python code passed in and output everything from stdout and stderr'''
 
         try:
             # Get code to run
@@ -46,7 +46,7 @@ class Code:
 
         with stdoutIO() as s:
             try:
-                exec(to_exec, dict(), dict())
+                await self.utils.run_async(exec, to_exec, dict(), dict())
             except Exception as e:
                 print(str(type(e)).replace('class ', ''), '\n', e.__str__())
         
@@ -67,9 +67,25 @@ class Code:
 
    
     @commands.command()
-    async def eval(self, ctx, *, expr):
+    async def eval(self, ctx, *, expr: str):
         '''Evaluate an expression'''
-        pass
+    
+        expr = expr.strip('`')
+        
+        # Confirm the command was recieved
+        final_msg = await ctx.send('Processing...')
+
+        # Process expr
+        try:
+            output = await self.utils.run_async(eval, expr)
+        except:
+            await final_msg.edit(content='Something is formatted incorrectly')
+
+        try:
+            # Edit message
+            await final_msg.edit(content='`{} = {}`'.format(expr, output))
+        except discord.errors.HTTPException:
+            await final_msg.edit(content='Failed, output length too high.\n{}'.format(expr))
 
 
 def setup(bot):

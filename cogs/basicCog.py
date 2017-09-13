@@ -4,20 +4,24 @@ from discord.ext import commands
 from utils import Utils
 
 
-class basicCog:
+class Basic:
 
     def __init__(self, bot):
         self.bot = bot
         self.utils = Utils(self.bot)
 
     
-    @commands.command()
+    @commands.command(description='Say Pong.')
     async def ping(self, ctx):
+        """Check if the bot is alive be making it say Pong."""
+
         await ctx.send('Pong')
 
     
-    @commands.command()
+    @commands.command(description='Unavailable')
     async def exit(self, ctx):
+        """Unavailable to anyone but me, resets the bot"""
+
         if str(ctx.author.id) == self.utils.config['my_id']:
             await self.bot.close()
         else:
@@ -25,4 +29,4 @@ class basicCog:
 
 
 def setup(bot):
-    bot.add_cog(basicCog(bot))
+    bot.add_cog(Basic(bot))

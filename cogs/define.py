@@ -72,17 +72,28 @@ class Define:
         self.bot = bot
         self.utils = Utils(self.bot)
 
-    @commands.group(invoke_without_command=True, description='Define a word/term/meme/etc.', aliases=['def', 'd', 'definition'])
+    @commands.group(invoke_without_command=True, description='Define word/term/meme etc.', aliases=['def', 'd', 'definition'])
     async def define(self, ctx):
-        """Define something"""
+        """
+        Define something with a given service
+
+        "define word foobar"
+            Finds the definition of `foobar` on UrbanDictionary
+
+        "define meme foobar"
+            Finds the summary of a meme on KnowYourMeme
+
+        etc.
+        """
 
         await ctx.send('No source supplied, try `{}help define`'.format(self.bot.command_prefix))
 
 
     @define.command(description='Find word definition on UrbanDictionary', aliases=['ud', 'urban', 'urbandictionary', 'w'])
-    async def word(self, ctx, *, word):
+    async def word(self, ctx, *, word: str):
         """Look up the definition of a word or sentence on UrbanDictionary"""
         
+        word = word.lower()
         resp = await definition_urban(word)
 
         if resp['status'] == 'error':
@@ -103,9 +114,10 @@ class Define:
 
 
     @define.command(description='Memes from KnowYourMeme')
-    async def meme(self, ctx, *, meme):
+    async def meme(self, ctx, *, meme: str):
         """Find a meme on KnowYourMeme and display it in chat"""
 
+        meme = meme.lower()
         resp = await definition_kym(meme)
 
         if resp['status'] == 'error':
