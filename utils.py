@@ -59,7 +59,7 @@ class Utils:
             if self.is_heroku:
                 self.config['token'] = os.environ.get('TOKEN')
                 self.config['my_id'] = os.environ.get('MY_ID')
-                self.config['']
+                self.config['wolfram_token'] = os.environ.get('WOLFRAM_TOKEN')
 
         
     async def run_async(self, sync_func, *args, **kwargs):
