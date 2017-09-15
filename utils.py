@@ -59,6 +59,7 @@ class Utils:
             if self.is_heroku:
                 self.config['token'] = os.environ.get('TOKEN')
                 self.config['my_id'] = os.environ.get('MY_ID')
+                self.config['']
 
         
     async def run_async(self, sync_func, *args, **kwargs):
@@ -70,7 +71,7 @@ class Utils:
 
     
     @classmethod
-    async def fetch(self, url):
+    async def fetch(cls, url):
         async with aiohttp.ClientSession() as cs:
             async with cs.get(url) as r:
                 res = await r.json()

@@ -1,11 +1,11 @@
+"""Cog for a discord bot"""
+
 import re
 import sys
-import os
-import discord
 import contextlib
 from io import StringIO
-from subprocess import run, Popen, PIPE
-from tempfile import NamedTemporaryFile
+
+import discord
 from discord.ext import commands
 from utils import Utils
 
@@ -27,7 +27,7 @@ class Code:
         self.utils = Utils(self.bot)
 
         # RegularExpression for detecting python code markdown
-        self.code_expr = re.compile(r'```py\n([^```]+)')
+        self.code_expr = re.compile(r'```(\w*)\s*([^```]+)\s*```')
 
     
     @commands.command(aliases=['py', 'code'])
@@ -41,14 +41,12 @@ class Code:
             # If the code markdown was improperly formatted
             return
 
-        # Send message confirming that the snippet is being processed
-        final_msg = await ctx.send('Processing...')
-
-        with stdoutIO() as s:
-            try:
-                await self.utils.run_async(exec, to_exec, dict(), dict())
-            except Exception as e:
-                print(str(type(e)).replace('class ', ''), '\n', e.__str__())
+        async with ctx.typing():
+            with stdoutIO() as s:
+                try:
+                    await self.utils.run_async(exec, to_exec, dict(), dict())
+                except Exception as e:
+                    print(str(type(e)).replace('class ', ''), '\n', e.__str__())
         
         out = s.getvalue()
 
@@ -60,32 +58,37 @@ class Code:
 
         try:
             # Edit message
-            await final_msg.edit(content=new_msg)
+            await ctx.send(new_msg)
         except discord.errors.HTTPException:
-            await final_msg.edit(content='Failed, output length too high.\n{}'.format(to_process))
+            await ctx.send('Failed, output length too high.\n{}'.format(to_process))
         
 
    
-    @commands.command()
+    @commands.command(aliases=['calc', 'calculate', 'evaluate'])
     async def eval(self, ctx, *, expr: str):
         '''Evaluate an expression'''
     
         expr = expr.strip('`')
-        
-        # Confirm the command was recieved
-        final_msg = await ctx.send('Processing...')
 
-        # Process expr
-        try:
-            output = await self.utils.run_async(eval, expr)
-        except:
-            await final_msg.edit(content='Something is formatted incorrectly')
+        async with ctx.typing():
+            # Process expr
+            try:
+                output = await self.utils.run_async(eval, expr)
+            except:
+                return await ctx.send('Something is formatted incorrectly')
 
         try:
             # Edit message
-            await final_msg.edit(content='`{} = {}`'.format(expr, output))
+            await ctx.send('`{} = {}`'.format(expr, output))
         except discord.errors.HTTPException:
-            await final_msg.edit(content='Failed, output length too high.\n{}'.format(expr))
+            await ctx.send('Failed, output length too high.\n{}'.format(expr))
+
+    
+    @commands.command()
+    async def rex(self, ctx, *, code):
+        
+        async with ctx.typing():
+            pass
 
 
 def setup(bot):
