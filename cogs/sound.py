@@ -9,7 +9,16 @@ from utils import Utils
 
 
 if not discord.opus.is_loaded():
-    discord.opus.load_opus('opus')
+    discord.opus.load_opus('libopus-0.x86.dll')
+
+
+def disconnect(voice, loop):
+    """Disconnect from VoiceChannel"""
+
+    print("nothing prints and bot doesn't disconnect")
+    coro = voice.disconnect
+    fut = asyncio.run_coroutine_threadsafe(coro, loop)
+    fut.result()
 
 
 class Sound:
@@ -18,15 +27,6 @@ class Sound:
     def __init__(self, bot):
         self.bot = bot
         self.utils = Utils(self.bot)
-        self.voice_clients = list()
-
-
-    def disconnect(self, voice_index):
-        """Disconnect from VoiceChannel"""
-
-        coro = self.voice_clients.pop(voice_index).disconnect()
-        fut = asyncio.run_coroutine_threadsafe(coro, self.bot.loop)
-        fut.result()
 
 
     @commands.command()
@@ -40,10 +40,9 @@ class Sound:
             await ctx.message.attachments[0].save(fp)
         to_play = discord.FFmpegPCMAudio(fp.name)
 
-        voice = await ctx.author.voice.channel.connect()
-        self.voice_clients.append(voice)
-        voice.play(to_play, after=lambda: self.disconnect(self.voice_clients.index(voice)))
+        self.voice = await ctx.author.voice.channel.connect()
+        self.voice.play(to_play, after=exit)
 
 
 def setup(bot):
-    bot.add_cog(Sound(bot))
+    pass#bot.add_cog(Sound(bot))
