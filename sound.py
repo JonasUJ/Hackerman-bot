@@ -45,4 +45,4 @@ class Sound:
 
 
 def setup(bot):
-    pass#bot.add_cog(Sound(bot))
+    bot.add_cog(Sound(bot))
