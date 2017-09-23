@@ -1,23 +1,39 @@
 """Cog for a discord bot"""
 
 import re
-import sys
-import contextlib
-from io import StringIO
+import inspect
+from urllib.parse import quote
 
 import discord
 from discord.ext import commands
 from utils import Utils
 
 
-@contextlib.contextmanager
-def stdoutIO(stdout=None):
-    old = sys.stdout
-    if stdout is None:
-        stdout = StringIO()
-    sys.stdout = stdout
-    yield stdout
-    sys.stdout = old
+class MarkdownCode:
+    """Get the language and code of a code section formatted like the following: ```lang\n code```"""
+
+    def __init__(self, code_section: str):
+        
+        # RegularExpression for detecting language and code 
+        self.code_expr = re.compile(r'```(\w*)\n\s*([^```]+)\s*```\s*(\w*)')
+
+        match = self.code_expr.search(code_section)
+
+        try:
+            self.lang = match.group(1)
+            self.src = match.group(2)
+            self.excess = match.group(3)
+        except AttributeError:
+            self.lang = None
+            self.src = None
+
+        
+    def __repr__(self):
+        return f'<MarkdownCode object: lang={self.lang}, src={self.src}>'
+
+
+    def __bool__(self):
+        return bool(self.lang) and bool(self.src)
 
 
 class Code:
@@ -26,69 +42,72 @@ class Code:
         self.bot = bot
         self.utils = Utils(self.bot)
 
-        # RegularExpression for detecting python code markdown
-        self.code_expr = re.compile(r'```(\w*)\s*([^```]+)\s*```')
 
-    
-    @commands.command(aliases=['py', 'code'])
-    async def process(self, ctx, *, to_process):
-        '''Process the python code passed in and output everything from stdout and stderr'''
+    @commands.command(aliases=['code', 'r'])
+    async def run(self, ctx, *, code: MarkdownCode, stdin=""):
+        """
+        Run code for various languages using http://rextester.com
+        Look at their site for a full list of available languages
+        or go to https://github.com/JonasUJ/Hackerman-bot/codeindex.json
 
-        try:
-            # Get code to run
-            to_exec = self.code_expr.search(to_process).group(1)
-        except AttributeError:
-            # If the code markdown was improperly formatted
-            return
+        Usage:
+        Code is formatted using discords built in markdown support
+        run \`\`\`language
+        code
+        \`\`\` "stdin input"
+        """
 
-        async with ctx.typing():
-            with stdoutIO() as s:
-                try:
-                    await self.utils.run_async(exec, to_exec, dict(), dict())
-                except Exception as e:
-                    print(str(type(e)).replace('class ', ''), '\n', e.__str__())
+        if not code:
+            await ctx.message.add_reaction('❌')
+            return await ctx.send(f'Code formatted incorrectly, try `{self.bot.command_prefix}help run`')
+
+        lang = self.utils.get_language_index(code.lang)
+        if not lang:
+            await ctx.message.add_reaction('❌')            
+            return await ctx.send(f'Language `{code.lang}` not recognized')
+
+        stdin = code.excess
         
-        out = s.getvalue()
+        with ctx.typing():
+            resp = await self.utils.fetch(f'http://rextester.com/rundotnet/api?LanguageChoice={lang}&Program={quote(code.src)}&Input={quote(stdin)}')
 
-        # Format output
-        formatted_output = '```py\n{}```'.format(out)
-        if formatted_output == '```py\n```': 
-            formatted_output = '```No output```'
-        new_msg = 'Output:{}'.format(formatted_output)
+        emb = discord.Embed(title=f"Ran program with language {code.lang}", description=resp['Stats'])
 
-        try:
-            # Edit message
-            await ctx.send(new_msg)
-        except discord.errors.HTTPException:
-            await ctx.send('Failed, output length too high.\n{}'.format(to_process))
-        
-
-   
-    @commands.command(aliases=['calc', 'calculate', 'evaluate'])
-    async def eval(self, ctx, *, expr: str):
-        '''Evaluate an expression'''
-    
-        expr = expr.strip('`')
-
-        async with ctx.typing():
-            # Process expr
-            try:
-                output = await self.utils.run_async(eval, expr)
-            except:
-                return await ctx.send('Something is formatted incorrectly')
+        for k, v in resp.items():
+            if k == "Stats":
+                continue
+            if v:
+                emb.add_field(name=k, value=f'```{code.lang}\n{v}```')
 
         try:
-            # Edit message
-            await ctx.send('`{} = {}`'.format(expr, output))
+            await ctx.send(embed=emb)
+            await ctx.message.add_reaction('✅')
         except discord.errors.HTTPException:
-            await ctx.send('Failed, output length too high.\n{}'.format(expr))
+            await ctx.message.add_reaction('❌')
+            return await ctx.send('Failed, output length too high.')
 
-    
+
     @commands.command()
-    async def rex(self, ctx, *, code):
-        
-        async with ctx.typing():
-            pass
+    async def src(self, ctx, *, cmd: str = None):
+        """
+        Get the source code of a command for whatever reason
+        """
+
+        if not cmd:
+            await ctx.send('https://github.com/JonasUJ/Hackerman-bot')
+            return await ctx.message.add_reaction('❌')
+
+        command = self.bot.get_command(cmd)
+        if not command:
+            await ctx.send('No such command')
+            return await ctx.message.add_reaction('❌')
+
+        src = command.callback.__code__
+        lines, firstlineno = inspect.getsourcelines(src)
+        lines = ''.join(lines).replace('```', '\`\`\`')
+
+        await ctx.send(f'```py\n{lines}```')
+        return await ctx.message.add_reaction('✅')
 
 
 def setup(bot):

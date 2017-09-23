@@ -18,6 +18,10 @@ async def on_ready():
     print('--------')
     await bot.change_presence(game=discord.Game(name='{}help'.format(bot.command_prefix), type=0))
 
+@bot.event
+async def on_message(message):
+    await bot.process_commands(message)
+
 if __name__ == '__main__':
 
     # Load extensions

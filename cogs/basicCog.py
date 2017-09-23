@@ -15,6 +15,7 @@ class Basic:
     async def ping(self, ctx):
         """Check if the bot is alive be making it say Pong."""
 
+        await ctx.message.add_reaction('✅')
         await ctx.send('Pong')
 
     
@@ -23,9 +24,10 @@ class Basic:
         """Unavailable to anyone but me, resets the bot"""
 
         if str(ctx.author.id) == self.utils.config['my_id']:
+            await ctx.message.add_reaction('✅')
             await self.bot.close()
         else:
-            await ctx.send('Permission denied')
+            await ctx.message.add_reaction('❌')
 
 
 def setup(bot):

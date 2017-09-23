@@ -1,6 +1,7 @@
 import json
 import os
 import functools
+
 import aiohttp
 
 
@@ -16,6 +17,9 @@ class Utils:
                 
             }
         }
+
+        with open('codeindex.json') as fp:
+            self.code_index = json.load(fp)
 
         self.is_heroku = os.environ.get('IS_HEROKU', None)
         
@@ -70,6 +74,17 @@ class Utils:
         return res
 
     
+    def get_language_index(self, language):
+        """Lookup the position of language in codeindex.json"""
+
+        for i, iterable in enumerate(self.code_index):
+            if language in iterable:
+                if i > 35:
+                    return i+2
+                return i+1
+        return None
+    
+
     @classmethod
     async def fetch(cls, url):
         async with aiohttp.ClientSession() as cs:

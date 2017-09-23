@@ -90,7 +90,8 @@ class Search:
         etc.
         """
 
-        await ctx.send('No source supplied, try `{}help define`'.format(self.bot.command_prefix))
+        await ctx.message.add_reaction('❌')
+        await ctx.send('None or invalid source supplied, try `{}help define`'.format(self.bot.command_prefix))
 
 
     @define.command(description='Find word definition on UrbanDictionary', aliases=['ud', 'urban', 'urbandictionary', 'w'])
@@ -102,9 +103,11 @@ class Search:
             resp = await definition_urban(word)
 
             if resp['status'] == 'error':
+                await ctx.message.add_reaction('❌')
                 return await ctx.send('Unable to connect to UrbanDictionary')
 
             elif resp['status'] == 'no_result':
+                await ctx.message.add_reaction('❌')
                 return await ctx.send('No definition for `{}`'.format(word))
 
             elif resp['status'] == 'ok':
@@ -115,6 +118,7 @@ class Search:
                     title='Definition for `{word}`'.format(word=resp['word']),
                     description=defined,
                     url=resp['link'])
+                await ctx.message.add_reaction('✅')
                 return await ctx.send(embed=emb)
 
 
@@ -127,6 +131,7 @@ class Search:
             resp = await definition_kym(meme)
 
             if resp['status'] == 'error':
+                await ctx.message.add_reaction('❌')
                 return await ctx.send('No entry for `{}`'.format(meme))
             
             elif resp['status'] == 'ok':
@@ -138,6 +143,8 @@ class Search:
                     description=summarised,
                     url=resp['link'])
                 emb.set_image(url=resp['img_url'])
+
+                await ctx.message.add_reaction('✅')
                 return await ctx.send(embed=emb)
 
 
@@ -145,7 +152,8 @@ class Search:
     async def search(self, ctx):
         """Find results from services like Wolfram|Alpha"""
 
-        await ctx.send('No source supplied, try `{}help search`'.format(self.bot.command_prefix))
+        await ctx.message.add_reaction('❌')
+        await ctx.send('None or invalid source supplied, try `{}help search`'.format(self.bot.command_prefix))
 
 
     @search.command(aliases=['wa', 'wolframalpha'])
@@ -156,6 +164,7 @@ class Search:
             resp = await self.utils.run_async(self.wolfram_client.query, term)
 
             if resp.get('@success') == 'false':
+                await ctx.message.add_reaction('❌')
                 return await ctx.send('No result for `{}`, try rephrasing your search (eg. `hc andersen` -> `h.c. andersen`)'.format(term))
 
             emb = discord.Embed(
@@ -182,8 +191,10 @@ class Search:
                         emb.set_image(url=subpod['img']['@src'])
 
             try:
+                await ctx.message.add_reaction('✅')
                 return await ctx.send(embed=emb)
             except:
+                await ctx.message.add_reaction('❌')
                 return await ctx.send('Unable to send result (probably due to message charater limit)')
 
 
