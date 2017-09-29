@@ -9,7 +9,7 @@
     ["php", "php_online_compiler"],
     ["pascal", "pascal_online_compiler"],
     ["objectivec", "objectivec_online_compiler"],
-    ["haskell", "haskell_online_compiler"],
+    ["hs", "haskell", "haskell_online_compiler"],
     ["rb", "ruby", "ruby_online_compiler"],
     ["perl", "perl_online_compiler"],
     ["lua", "lua_online_compiler"],
