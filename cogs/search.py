@@ -84,7 +84,8 @@ async def search_r34(query):
     }
 
     resp = await Utils.fetch(url, params=params, mimetype='text')
-    url = ET.fromstring(resp)[randrange(0, 20)].attrib['file_url']
+    root = ET.fromstring(resp)
+    url = root[randrange(0, len(root))].attrib['file_url']
     return url
 
 
@@ -225,7 +226,13 @@ class Search:
         Hastily implemented, don't count on it working
         """
 
-        await ctx.send(await search_r34(query))
+        try:
+            with ctx.typing():
+                await ctx.send(await search_r34(query))
+        except:
+            await ctx.message.add_reaction('❌')
+            return await ctx.send('Couldn\'t find anything, sowwy :/')
+    
 
 
 def setup(bot):
