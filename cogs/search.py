@@ -1,6 +1,8 @@
 """Cog for a discord bot"""
 
+import xml.etree.ElementTree as ET
 from urllib.parse import quote
+from random import randrange
 
 import wolframalpha
 import discord
@@ -65,6 +67,25 @@ async def definition_kym(meme):
         res['status'] = 'error'
     finally:
         return res
+
+
+async def search_r34(query):
+    """
+    Requested by someone I know
+    Don't jugde
+    """
+
+    url = "https://rule34.xxx/index.php"
+    params = {
+        "page": "dapi",
+        "s": "post",
+        "q": "index",
+        "tags": query
+    }
+
+    resp = await Utils.fetch(url, params=params, mimetype='text')
+    url = ET.fromstring(resp)[randrange(0, 20)].attrib['file_url']
+    return url
 
 
 class Search:
@@ -196,6 +217,15 @@ class Search:
             except:
                 await ctx.message.add_reaction('❌')
                 return await ctx.send('Unable to send result (probably due to message charater limit)')
+    
+    @search.command(aliases=['r34'])
+    async def rule34(self, ctx, *, query):
+        """
+        Search rule 34
+        Hastily implemented, don't count on it working
+        """
+
+        await ctx.send(await search_r34(query))
 
 
 def setup(bot):

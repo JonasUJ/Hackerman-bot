@@ -86,8 +86,8 @@ class Utils:
     
 
     @classmethod
-    async def fetch(cls, url):
+    async def fetch(cls, url, params={}, mimetype='json'):
         async with aiohttp.ClientSession() as cs:
-            async with cs.get(url) as r:
-                res = await r.json()
+            async with cs.get(url, params=params) as r:
+                res = await getattr(r, mimetype)()
         return res
