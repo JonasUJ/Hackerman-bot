@@ -232,8 +232,6 @@ class Search:
         except:
             await ctx.message.add_reaction('❌')
             return await ctx.send('Couldn\'t find anything, sowwy :/')
-    
-
 
 def setup(bot):
     bot.add_cog(Search(bot))
