@@ -14,7 +14,7 @@ class Vote:
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
-            await ctx.send('Found no member with that name (usernames are case-sensitive)')
+            await ctx.send('Found no member with that name (usernames are case-sensitive)')    
     
     async def end_vote(self, ctx, msgid):
         yes, no = 1, 1
@@ -76,7 +76,10 @@ class Vote:
             await msg.edit(content=f'Kick {user}?')
 
             if await self.end_vote(ctx, msg.id):
-                await ctx.send('not actually kicking, currently just testing...')
+                try:
+                    await user.kick()
+                except discord.errors.Forbidden:
+                    await ctx.send('I cannot kick members with higher privilege than me')
 
         msg = await ctx.send(f'Kick {user}? Countdown: 20')
         await msg.add_reaction('\u2705')
