@@ -62,6 +62,7 @@ class Vote:
     async def votekick(self, ctx, *, user:commands.MemberConverter):
         if not ctx.author.guild_permissions.kick_members:
             await ctx.send('You do not have permission to kick members')
+            return
 
         async def kick_timeout(timeout_time, ctx, msg):
             now = time.time()
@@ -85,7 +86,6 @@ class Vote:
         await msg.add_reaction('\u2705')
         await msg.add_reaction('\u274C')
         self.bot.loop.create_task(kick_timeout(20, ctx, msg))
-
 
 def setup(bot):
     bot.add_cog(Vote(bot))
