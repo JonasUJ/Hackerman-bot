@@ -89,7 +89,7 @@ async def search_r34(query):
     return url
 
 
-class Search:
+class Search(commands.Cog):
     """Search for something using services such as `UrbanDictionary` or `KnowYourMeme`"""
 
     def __init__(self, bot):

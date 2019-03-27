@@ -16,7 +16,7 @@ async def on_ready():
     print('Logged in as:', bot.user.name)
     print('User id:', bot.user.id)
     print('--------')
-    await bot.change_presence(game=discord.Game(name='{}help'.format(bot.command_prefix), type=0))
+    await bot.change_presence(activity=discord.Game(name='{}help'.format(bot.command_prefix), type=0))
 
 @bot.event
 async def on_message(message):

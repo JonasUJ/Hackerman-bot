@@ -1,6 +1,7 @@
 """Cog for a discord bot, uses a discord.VoiceClient to play sounds"""
 
 import asyncio
+import os
 from tempfile import NamedTemporaryFile
 
 import discord
@@ -22,7 +23,7 @@ def disconnect(voice, loop):
 
 
 class Sound:
-    """Different commands for playing sounds"""
+    """A variety commands for playing sounds"""
 
     def __init__(self, bot):
         self.bot = bot
@@ -39,9 +40,10 @@ class Sound:
         with NamedTemporaryFile(delete=False) as fp:
             await ctx.message.attachments[0].save(fp)
         to_play = discord.FFmpegPCMAudio(fp.name)
+        os.remove(FP.name)
 
         self.voice = await ctx.author.voice.channel.connect()
-        self.voice.play(to_play, after=exit)
+        self.voice.play(to_play, after=lambda e: print("doesn't print", e))
 
 
 def setup(bot):

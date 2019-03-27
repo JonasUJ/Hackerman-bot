@@ -36,7 +36,7 @@ class MarkdownCode:
         return bool(self.lang) and bool(self.src)
 
 
-class Code:
+class Code(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
