@@ -14,7 +14,7 @@ class Police(commands.Cog):
             await ctx.send('Found no member with that name (usernames are case-sensitive)')
 
     @commands.has_role("Police")
-    @commands.command()
+    @commands.command(aliases=['imprison', 'jail'])
     async def arrest(self, ctx, member: commands.MemberConverter):
         try:
             await member.add_roles(discord.utils.get(ctx.guild.roles, name="Prisoner"))
@@ -24,8 +24,8 @@ class Police(commands.Cog):
             await ctx.message.add_reaction('\u274C')
 
     @commands.has_role("Police")
-    @commands.command()
-    async def free(self, ctx, member: commands.MemberConverter):
+    @commands.command(aliases=['free', 'unjail'])
+    async def pardon(self, ctx, member: commands.MemberConverter):
         try:
             await member.remove_roles(discord.utils.get(ctx.guild.roles, name="Prisoner"))
             await ctx.message.add_reaction('\u2705')
