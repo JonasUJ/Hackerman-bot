@@ -15,7 +15,7 @@ class Region(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(2, 30)
     @commands.command()
-    async def switch(self, ctx: commands.Context, member: commands.MemberConverter):
+    async def switch(self, ctx: commands.Context):
         '''
         Switch between the two eu regions
         '''
