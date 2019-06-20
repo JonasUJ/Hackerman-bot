@@ -13,17 +13,21 @@ class Region(commands.Cog):
         return discord.enums.VoiceRegion.eu_central
 
     @commands.guild_only()
-    @commands.has_any_role()
+    @commands.cooldown(2, 30)
     @commands.command()
     async def switch(self, ctx: commands.Context, member: commands.MemberConverter):
-        """
+        '''
         Switch between the two eu regions
-        """
+        '''
         try:
             await ctx.guild.edit(region=self.get_region(ctx.guild.region))
             await ctx.message.add_reaction('\u2705')
         except:
             await ctx.message.add_reaction('\u274C')
+
+    async def on_command_error(self, ctx: commands.Context, error):
+        if type(error) == commands.CommandOnCooldown:
+            await ctx.send('Command is on cooldown for up to 30 seconds')
 
 
 def setup(bot):
