@@ -26,8 +26,9 @@ class Region(commands.Cog):
             await ctx.message.add_reaction('\u274C')
 
     async def on_command_error(self, ctx: commands.Context, error):
-        if type(error) == commands.CommandOnCooldown:
+        if type(error) == commands.errors.CommandOnCooldown:
             await ctx.send('Command is on cooldown for up to 30 seconds')
+        await ctx.message.add_reaction('\u274C')
 
 
 def setup(bot):
