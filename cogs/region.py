@@ -14,7 +14,11 @@ class Region(commands.Cog):
 
     @commands.guild_only()
     @commands.has_any_role()
-    async def newregion(self, ctx: commands.Context, member: commands.MemberConverter):
+    @commands.command()
+    async def switch(self, ctx: commands.Context, member: commands.MemberConverter):
+        """
+        Switch between the two eu regions
+        """
         try:
             await ctx.guild.edit(region=self.get_region(ctx.guild.region))
             await ctx.message.add_reaction('\u2705')
