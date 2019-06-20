@@ -12,7 +12,6 @@ class Region(commands.Cog):
             return discord.enums.VoiceRegion.eu_west
         return discord.enums.VoiceRegion.eu_central
 
-    @commands.command(aliases=['imprison', 'jail'])
     @commands.guild_only()
     @commands.has_any_role()
     async def newregion(self, ctx: commands.Context, member: commands.MemberConverter):
