@@ -25,7 +25,8 @@ class Region(commands.Cog):
         except:
             await ctx.message.add_reaction('\u274C')
 
-    async def on_command_error(self, ctx: commands.Context, error):
+    @switch.error()
+    async def switch_error(self, ctx: commands.Context, error):
         if type(error) == commands.errors.CommandOnCooldown:
             await ctx.send('Command is on cooldown for up to 30 seconds')
         await ctx.message.add_reaction('\u274C')
