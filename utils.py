@@ -14,7 +14,7 @@ class Utils:
         self.STANDARD = {
             "command_prefix": "&",
             "cogs": {
-                
+
             }
         }
 
@@ -22,7 +22,7 @@ class Utils:
             self.code_index = json.load(fp)
 
         self.is_heroku = os.environ.get('IS_HEROKU', None)
-        
+
         def setitems(dic: dict, standard: dict):
             '''Recursivly generate a dictionary from dic with fallback to standard'''
 
@@ -65,15 +65,13 @@ class Utils:
                 self.config['my_id'] = os.environ.get('MY_ID')
                 self.config['wolfram_token'] = os.environ.get('WOLFRAM_TOKEN')
 
-        
     async def run_async(self, sync_func, *args, **kwargs):
         """Run sync func as async"""
-        
+
         nfunc = functools.partial(sync_func, *args, **kwargs)
         res = await self.bot.loop.run_in_executor(None, nfunc)
         return res
 
-    
     def get_language_index(self, language):
         """Lookup the position of language in codeindex.json"""
 
@@ -83,10 +81,9 @@ class Utils:
                     return i+2
                 return i+1
         return None
-    
 
-    @classmethod
-    async def fetch(cls, url, params={}, mimetype='json'):
+    @staticmethod
+    async def fetch(url, params={}, mimetype='json'):
         async with aiohttp.ClientSession() as cs:
             async with cs.get(url, params=params) as r:
                 res = await getattr(r, mimetype)()
